@@ -119,6 +119,9 @@ class RaygunLogWriter extends Zend_Log_Writer_Abstract {
 	function updateData(&$tags, &$customData)
 	{
 		foreach (ClassInfo::subclassesFor(RaygunLogProcessor::class) as $class) {
+			if ($class === RaygunLogProcessor::class) {
+				continue;
+			}
 			singleton($class)->processLogData($tags, $customData);
 		}
 	}
