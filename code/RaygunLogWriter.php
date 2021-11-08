@@ -103,12 +103,24 @@ class RaygunLogWriter extends Zend_Log_Writer_Abstract {
 	}
 
 	function exception_handler($exception) {
+		$tags = null;
+		$customData = null;
+		$this->updateData($tags, $customData);
 		$this->getClient()->SendException($exception);
 	}
 
 	function error_handler($errno, $errstr, $errfile, $errline, $tags ) {
 		if($errno === '') $errno = 0; // compat with ErrorException
-		$this->getClient()->SendError($errno, $errstr, $errfile, $errline, $tags);
+		$customData = null;
+		$this->updateData($tags, $customData);
+		$this->getClient()->SendError($errno, $errstr, $errfile, $errline, $tags, $customData);
+	}
+
+	function updateData(&$tags, &$customData)
+	{
+		foreach (ClassInfo::subclassesFor(RaygunLogProcessor::class) as $class) {
+			singleton($class)->processLogData($tags, $customData);
+		}
 	}
 
 	function shutdown_function() {
