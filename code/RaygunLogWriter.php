@@ -80,23 +80,23 @@ class RaygunLogWriter extends Zend_Log_Writer_Abstract {
 		}
 	}
 
-    /**
-     * Checks if the error reported in the message is an exception and in that case returns an ReportedException
-     *
-     * @param array $message
-     * @return null|\ReportedException
-     */
-    protected function getException($message) {
-        // the triple '\' in the pattern is in practicality a single backslash to include namespace separators
-        if (!preg_match('/^Uncaught ([A-Za-z0-9_\\\]+):(.*)$/', $message['message']['errstr'], $matches)) {
-            return null;
-        }
-        if ($matches[1] != 'Exception' && !is_subclass_of($matches[1], 'Exception')) {
-            return null;
-        }
-        $message['message']['errstr'] = $matches[1] . ': ' . $matches[2];
-        return new ReportedException($message['message']);
-    }
+	/**
+	 * Checks if the error reported in the message is an exception and in that case returns an ReportedException
+	 *
+	 * @param array $message
+	 * @return null|\ReportedException
+	 */
+	protected function getException($message) {
+		// the triple '\' in the pattern is in practicality a single backslash to include namespace separators
+		if (!preg_match('/^Uncaught ([A-Za-z0-9_\\\]+):(.*)$/', $message['message']['errstr'], $matches)) {
+			return null;
+		}
+		if ($matches[1] != 'Exception' && !is_subclass_of($matches[1], 'Exception')) {
+			return null;
+		}
+		$message['message']['errstr'] = $matches[1] . ': ' . $matches[2];
+		return new ReportedException($message['message']);
+	}
 
 	public static function factory($config) {
 		return Injector::inst()->create('RaygunLogWriter', $config['app_key']);
