@@ -59,7 +59,7 @@ class RaygunLogWriter extends Zend_Log_Writer_Abstract {
 			return;
 		}
 
-		$disableTracking = (bool)Config::inst()->get('Raygun4php\RaygunClient', 'disable_user_tracking');
+		$disableTracking = (bool)Config::inst()->get(RaygunClient::class, 'disable_user_tracking');
 		// keep track of the current user (if available) so we can identify it in Raygun
 		if (!$disableTracking && Member::currentUserID()) {
 			$this->getClient()->SetUser(Member::currentUser()->Email);
