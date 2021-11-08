@@ -15,6 +15,14 @@ if (
 	$raygunAPIKey = $siteConfig->RaygunAPIKey;
 }
 
+// Set proxy config for CWP environments.
+if (defined('SS_OUTBOUND_PROXY')) {
+	Config::inst()->update('RaygunLogWriter', 'proxy_host', SS_OUTBOUND_PROXY);
+	if (defined('SS_OUTBOUND_PROXY_PORT')) {
+		Config::inst()->update('RaygunLogWriter', 'proxy_port', SS_OUTBOUND_PROXY_PORT);
+	}
+}
+
 // If we have an API key, set up the raygun log writer.
 if(!empty($raygunAPIKey)) {
 	$raygun = Injector::inst()->create('RaygunLogWriter', $raygunAPIKey);

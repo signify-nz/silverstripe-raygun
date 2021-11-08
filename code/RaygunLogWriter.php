@@ -137,6 +137,17 @@ class RaygunLogWriter extends Zend_Log_Writer_Abstract {
 		if(!$this->client) {
 			$this->client = new RaygunClient($this->apiKey);
 			$this->filterSensitiveData();
+
+			// set proxy if configured.
+			$proxyHost = Config::inst()->get('RaygunLogWriter', 'proxy_host');
+			if (!empty($proxyHost)) {
+				$proxy = $proxyHost;
+				$proxyPort = Config::inst()->get('RaygunLogWriter', 'proxy_port');
+				if (!empty($proxyPort)) {
+					$proxy .= ':' . $proxyPort;
+				}
+				$this->client->setProxy($proxy);
+			}
 		}
 
 		return $this->client;

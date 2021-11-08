@@ -50,6 +50,16 @@ class TriggerTestExtensionTask extends BuildTask
 }
 ```
 
+### Proxy
+
+If you need to forward outgoing requests through a proxy (such as for sites hosted in CWP), you can set the proxy host and optional port via yaml config:
+
+```yml
+RaygunLogWriter:
+  proxy_host: 'https://proxy.example/'
+  proxy_port: '4343'
+```
+
 ## Filtering
 
 Some error data will be too sensitive to transmit to an external service, such as credit card details or passwords. Since this data is very application specific, Raygun doesn't filter out anything by default. You can configure to either replace or otherwise transform specific values based on their keys. These transformations apply to form data (`$_POST`), custom user data, HTTP headers, and environment data (`$_SERVER`). It does not filter the URL or its `$_GET` parameters, or custom message strings. Since Raygun doesn't log method arguments in stack traces, those don't need filtering. All key comparisons are case insensitive.
