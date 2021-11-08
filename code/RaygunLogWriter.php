@@ -106,7 +106,7 @@ class RaygunLogWriter extends Zend_Log_Writer_Abstract {
 		$tags = null;
 		$customData = null;
 		$this->updateData($tags, $customData);
-		$this->getClient()->SendException($exception);
+		$this->getClient()->SendException($exception, $tags, $customData);
 	}
 
 	function error_handler($errno, $errstr, $errfile, $errline, $tags ) {
