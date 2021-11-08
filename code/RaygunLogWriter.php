@@ -13,6 +13,12 @@ class RaygunLogWriter extends Zend_Log_Writer_Abstract {
 	private static $api_key;
 
 	/**
+	 * @config
+	 * @var boolean If false, no errors will be reported to raygun.
+	 */
+	private static $enabled = true;
+
+	/**
 	 * @var string
 	 */
 	protected $apiKey;
@@ -48,11 +54,16 @@ class RaygunLogWriter extends Zend_Log_Writer_Abstract {
 	}
 
 	function _write($message) {
-        $disableTracking = (bool)Config::inst()->get('Raygun4php\RaygunClient', 'disable_user_tracking');
-        // keep track of the current user (if available) so we can identify it in Raygun
-        if (!$disableTracking && Member::currentUserID()) {
-            $this->getClient()->SetUser(Member::currentUser()->Email);
-        }
+		// Don't log anything to raygun if this writer has been disabled.
+		if (!(bool)Config::inst()->get('RaygunLogWriter', 'enabled')) {
+			return;
+		}
+
+		$disableTracking = (bool)Config::inst()->get('Raygun4php\RaygunClient', 'disable_user_tracking');
+		// keep track of the current user (if available) so we can identify it in Raygun
+		if (!$disableTracking && Member::currentUserID()) {
+			$this->getClient()->SetUser(Member::currentUser()->Email);
+		}
 
 		// Reverse-engineer the SilverStripe-repackaged exception
 		$ex = $this->getException($message);

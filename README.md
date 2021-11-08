@@ -20,6 +20,36 @@ Alternatively, the API key can be defined in a yaml config file, as well as the 
 	  api_key: 'ABCDEF123456=='
 	  level: 'SS_Log::WARNING'
 
+### Disable log writer
+
+The `RaygunLogWriter` is enabled by default when the API key is available. There may be some situations where you need the API key to be set but you don't want the log writer enabled by default (e.g. you may not want the log writer enabled in dev or test environments except when triggering some test exception via a `BuildTask`).
+
+```yml
+---
+Only:
+  environment: 'dev'
+---
+RaygunLogWriter:
+  enabled: false
+```
+
+Then in your `BuildTask` you can enable that handler as required.
+
+```php
+class TriggerTestExtensionTask extends BuildTask
+{
+    protected $title = 'Trigger Test Exception';
+    protected $description = 'Throws an exception. Useful for checking raygun integration is working as expected.';
+
+    public function run($request)
+    {
+        $env = Director::get_environment_type();
+        Config::inst()->update('RaygunLogWriter', 'enabled', true);
+        throw new Exception("Test exception thrown from '$env' environment.");
+    }
+}
+```
+
 ## Filtering
 
 Some error data will be too sensitive to transmit to an external service, such as credit card details or passwords. Since this data is very application specific, Raygun doesn't filter out anything by default. You can configure to either replace or otherwise transform specific values based on their keys. These transformations apply to form data (`$_POST`), custom user data, HTTP headers, and environment data (`$_SERVER`). It does not filter the URL or its `$_GET` parameters, or custom message strings. Since Raygun doesn't log method arguments in stack traces, those don't need filtering. All key comparisons are case insensitive.
@@ -68,5 +98,5 @@ Injector:
     class: CustomRaygunLogWriter
 ```
 
-More information about accepted filtering formats is available 
+More information about accepted filtering formats is available
 in the [Raygun4php](https://github.com/MindscapeHQ/raygun4php) documentation.
